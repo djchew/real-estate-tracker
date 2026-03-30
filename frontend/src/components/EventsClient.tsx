@@ -99,7 +99,7 @@ export default function EventsClient({ initialEvents, properties }: Props) {
         </div>
         <button
           onClick={() => setAdding((v) => !v)}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-amber-600 text-white text-sm font-medium rounded-lg hover:bg-amber-700 transition-colors"
         >
           <Plus className="h-4 w-4" />
           Add Event
@@ -116,7 +116,7 @@ export default function EventsClient({ initialEvents, properties }: Props) {
               value={form.title}
               onChange={(e) => set("title", e.target.value)}
               placeholder="e.g. HVAC inspection"
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
             />
           </div>
           <div>
@@ -126,7 +126,7 @@ export default function EventsClient({ initialEvents, properties }: Props) {
               required
               value={form.due_date}
               onChange={(e) => set("due_date", e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
             />
           </div>
           <div>
@@ -134,7 +134,7 @@ export default function EventsClient({ initialEvents, properties }: Props) {
             <select
               value={form.category}
               onChange={(e) => set("category", e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
             >
               {CATEGORIES.map((c) => <option key={c} value={c}>{capitalize(c)}</option>)}
             </select>
@@ -144,7 +144,7 @@ export default function EventsClient({ initialEvents, properties }: Props) {
             <select
               value={form.property_id}
               onChange={(e) => set("property_id", e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
             >
               <option value="">— None —</option>
               {properties.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
@@ -155,11 +155,11 @@ export default function EventsClient({ initialEvents, properties }: Props) {
             <input
               value={form.notes}
               onChange={(e) => set("notes", e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
             />
           </div>
           <div className="sm:col-span-3 flex gap-2">
-            <button type="submit" disabled={saving} className="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 disabled:opacity-50">
+            <button type="submit" disabled={saving} className="px-4 py-2 bg-amber-600 text-white text-sm font-medium rounded-lg hover:bg-amber-700 disabled:opacity-50">
               {saving ? "Saving…" : "Add Event"}
             </button>
             <button type="button" onClick={() => { setAdding(false); setForm(blank); }} className="px-3 py-2 border border-gray-300 text-gray-600 text-sm rounded-lg hover:bg-gray-50">
@@ -213,7 +213,7 @@ function EventList({
       {events.map((e) => (
         <li key={e.id} className="px-5 py-4 flex items-center justify-between gap-4">
           <div className="min-w-0 flex items-start gap-3">
-            <CalendarClock className="h-4 w-4 text-indigo-400 mt-0.5 shrink-0" />
+            <CalendarClock className="h-4 w-4 text-amber-400 mt-0.5 shrink-0" />
             <div>
               <p className="text-sm font-medium text-gray-800">{e.title}</p>
               <p className="text-xs text-gray-400 mt-0.5">

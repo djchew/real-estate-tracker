@@ -96,7 +96,7 @@ export default function PropertyForm({ property }: Props) {
         </div>
       )}
 
-      <section className="bg-white rounded-xl border border-gray-200 p-5 space-y-4">
+      <section className="bg-white rounded-2xl border border-stone-100 shadow-sm p-5 space-y-4">
         <h2 className="text-sm font-semibold text-gray-700">Basic Info</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="sm:col-span-2">
@@ -106,7 +106,7 @@ export default function PropertyForm({ property }: Props) {
               value={form.name}
               onChange={(e) => set("name", e.target.value)}
               placeholder='e.g. "Oak Street Duplex"'
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
             />
           </div>
           <div>
@@ -114,7 +114,7 @@ export default function PropertyForm({ property }: Props) {
             <select
               value={form.property_type}
               onChange={(e) => set("property_type", e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
             >
               {PROPERTY_TYPES.map((t) => (
                 <option key={t} value={t}>{label(t)}</option>
@@ -126,7 +126,7 @@ export default function PropertyForm({ property }: Props) {
             <select
               value={form.status}
               onChange={(e) => set("status", e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
             >
               {STATUSES.map((s) => (
                 <option key={s} value={s}>{label(s)}</option>
@@ -136,7 +136,7 @@ export default function PropertyForm({ property }: Props) {
         </div>
       </section>
 
-      <section className="bg-white rounded-xl border border-gray-200 p-5 space-y-4">
+      <section className="bg-white rounded-2xl border border-stone-100 shadow-sm p-5 space-y-4">
         <h2 className="text-sm font-semibold text-gray-700">Address</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="sm:col-span-2">
@@ -145,7 +145,7 @@ export default function PropertyForm({ property }: Props) {
               required
               value={form.address}
               onChange={(e) => set("address", e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
             />
           </div>
           <div>
@@ -154,7 +154,7 @@ export default function PropertyForm({ property }: Props) {
               required
               value={form.city}
               onChange={(e) => set("city", e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
             />
           </div>
           <div className="grid grid-cols-2 gap-4">
@@ -166,7 +166,7 @@ export default function PropertyForm({ property }: Props) {
                 onChange={(e) => set("state", e.target.value)}
                 maxLength={2}
                 placeholder="TX"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
               />
             </div>
             <div>
@@ -175,14 +175,14 @@ export default function PropertyForm({ property }: Props) {
                 required
                 value={form.zip}
                 onChange={(e) => set("zip", e.target.value)}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
               />
             </div>
           </div>
         </div>
       </section>
 
-      <section className="bg-white rounded-xl border border-gray-200 p-5 space-y-4">
+      <section className="bg-white rounded-2xl border border-stone-100 shadow-sm p-5 space-y-4">
         <h2 className="text-sm font-semibold text-gray-700">Financials</h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div>
@@ -194,7 +194,7 @@ export default function PropertyForm({ property }: Props) {
               value={form.purchase_price}
               onChange={(e) => set("purchase_price", e.target.value)}
               placeholder="0.00"
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
             />
           </div>
           <div>
@@ -206,7 +206,7 @@ export default function PropertyForm({ property }: Props) {
               value={form.current_value}
               onChange={(e) => set("current_value", e.target.value)}
               placeholder="0.00"
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
             />
           </div>
           <div>
@@ -215,13 +215,13 @@ export default function PropertyForm({ property }: Props) {
               type="date"
               value={form.purchase_date}
               onChange={(e) => set("purchase_date", e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
             />
           </div>
         </div>
       </section>
 
-      <section className="bg-white rounded-xl border border-gray-200 p-5 space-y-4">
+      <section className="bg-white rounded-2xl border border-stone-100 shadow-sm p-5 space-y-4">
         <h2 className="text-sm font-semibold text-gray-700">Details</h2>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           <div>
@@ -231,7 +231,7 @@ export default function PropertyForm({ property }: Props) {
               min="0"
               value={form.bedrooms}
               onChange={(e) => set("bedrooms", e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
             />
           </div>
           <div>
@@ -242,7 +242,7 @@ export default function PropertyForm({ property }: Props) {
               step="0.5"
               value={form.bathrooms}
               onChange={(e) => set("bathrooms", e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
             />
           </div>
           <div>
@@ -252,7 +252,7 @@ export default function PropertyForm({ property }: Props) {
               min="0"
               value={form.square_feet}
               onChange={(e) => set("square_feet", e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
             />
           </div>
           <div>
@@ -263,7 +263,7 @@ export default function PropertyForm({ property }: Props) {
               max="2100"
               value={form.year_built}
               onChange={(e) => set("year_built", e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
             />
           </div>
         </div>
@@ -273,7 +273,7 @@ export default function PropertyForm({ property }: Props) {
             rows={3}
             value={form.notes}
             onChange={(e) => set("notes", e.target.value)}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 resize-none"
           />
         </div>
       </section>
@@ -282,7 +282,7 @@ export default function PropertyForm({ property }: Props) {
         <button
           type="submit"
           disabled={saving}
-          className="px-5 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 disabled:opacity-50 transition-colors"
+          className="px-5 py-2 bg-amber-600 text-white text-sm font-medium rounded-lg hover:bg-amber-700 disabled:opacity-50 transition-colors"
         >
           {saving ? "Saving…" : property ? "Save Changes" : "Create Property"}
         </button>

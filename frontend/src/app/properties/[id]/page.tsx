@@ -41,7 +41,7 @@ export default async function PropertyPage({
       <div className="flex items-start justify-between">
         <div>
           <div className="flex items-center gap-2 text-sm text-gray-400 mb-1">
-            <Link href="/properties" className="hover:text-indigo-600">Properties</Link>
+            <Link href="/properties" className="hover:text-amber-600">Properties</Link>
             <span>/</span>
             <span className="text-gray-600">{property.name}</span>
           </div>
@@ -71,7 +71,7 @@ export default async function PropertyPage({
           { label: "Monthly Rent", value: monthlyRent > 0 ? fmt$(monthlyRent) : "—" },
           { label: "Active Tenants", value: activeTenants.length.toString() },
         ].map((m) => (
-          <div key={m.label} className="bg-white rounded-xl border border-gray-200 p-4">
+          <div key={m.label} className="bg-white rounded-2xl border border-stone-100 shadow-sm p-4">
             <p className="text-xs text-gray-400 font-medium">{m.label}</p>
             <p className="text-xl font-bold text-gray-800 mt-1">{m.value}</p>
           </div>
@@ -79,7 +79,7 @@ export default async function PropertyPage({
       </div>
 
       {/* Property details */}
-      <div className="bg-white rounded-xl border border-gray-200 p-5 grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
+      <div className="bg-white rounded-2xl border border-stone-100 shadow-sm p-5 grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
         <div>
           <p className="text-xs text-gray-400">Type</p>
           <p className="font-medium mt-0.5">{capitalize(property.property_type)}</p>

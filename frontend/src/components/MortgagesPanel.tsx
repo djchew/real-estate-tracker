@@ -70,7 +70,7 @@ export default function MortgagesPanel({ propertyId, initialMortgages }: Props) 
   }
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200">
+    <div className="bg-white rounded-2xl border border-stone-100 shadow-sm">
       <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
         <div className="flex items-center gap-2">
           <CreditCard className="h-4 w-4 text-gray-400" />
@@ -78,7 +78,7 @@ export default function MortgagesPanel({ propertyId, initialMortgages }: Props) 
         </div>
         <button
           onClick={() => setAdding((v) => !v)}
-          className="inline-flex items-center gap-1.5 text-xs font-medium text-indigo-600 hover:text-indigo-700"
+          className="inline-flex items-center gap-1.5 text-xs font-medium text-amber-600 hover:text-amber-700"
         >
           <Plus className="h-3.5 w-3.5" />
           Add
@@ -104,7 +104,7 @@ export default function MortgagesPanel({ propertyId, initialMortgages }: Props) 
                 step={step ?? (type === "number" ? "any" : undefined)}
                 value={form[key as keyof typeof form] as string}
                 onChange={(e) => set(key as keyof typeof form, e.target.value)}
-                className="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
               />
             </div>
           ))}
@@ -113,7 +113,7 @@ export default function MortgagesPanel({ propertyId, initialMortgages }: Props) 
             <select
               value={form.loan_type}
               onChange={(e) => set("loan_type", e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
             >
               {LOAN_TYPES.map((t) => <option key={t} value={t}>{label(t)}</option>)}
             </select>
@@ -128,7 +128,7 @@ export default function MortgagesPanel({ propertyId, initialMortgages }: Props) 
               />
               Primary mortgage
             </label>
-            <button type="submit" disabled={saving} className="ml-auto px-4 py-1.5 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 disabled:opacity-50">
+            <button type="submit" disabled={saving} className="ml-auto px-4 py-1.5 bg-amber-600 text-white text-sm font-medium rounded-lg hover:bg-amber-700 disabled:opacity-50">
               {saving ? "Saving…" : "Save"}
             </button>
             <button type="button" onClick={() => { setAdding(false); setForm(blank); }} className="px-3 py-1.5 border border-gray-300 text-gray-600 text-sm rounded-lg hover:bg-gray-50">
@@ -148,7 +148,7 @@ export default function MortgagesPanel({ propertyId, initialMortgages }: Props) 
                 <div className="flex items-center gap-2">
                   <p className="font-medium text-sm text-gray-800">{m.lender}</p>
                   {m.is_primary && (
-                    <span className="text-xs bg-indigo-50 text-indigo-600 px-1.5 py-0.5 rounded">Primary</span>
+                    <span className="text-xs bg-amber-50 text-amber-600 px-1.5 py-0.5 rounded">Primary</span>
                   )}
                 </div>
                 <p className="text-xs text-gray-400 mt-0.5">

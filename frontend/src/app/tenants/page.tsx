@@ -37,7 +37,7 @@ export default async function TenantsPage() {
           <p className="text-sm text-gray-400 mt-1">Add tenants from a property page.</p>
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+        <div className="bg-white rounded-2xl border border-stone-100 shadow-sm overflow-hidden">
           <table className="w-full text-sm">
             <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
@@ -56,7 +56,7 @@ export default async function TenantsPage() {
                     {t.email && <div className="text-xs text-gray-400">{t.email}</div>}
                   </td>
                   <td className="px-4 py-3">
-                    <Link href={`/properties/${t.propertyId}`} className="text-indigo-600 hover:underline">
+                    <Link href={`/properties/${t.propertyId}`} className="text-amber-600 hover:underline">
                       {t.propertyName}
                     </Link>
                   </td>

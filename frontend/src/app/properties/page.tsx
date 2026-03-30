@@ -23,7 +23,7 @@ export default async function PropertiesPage() {
         </div>
         <Link
           href="/properties/new"
-          className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-amber-600 text-white text-sm font-medium rounded-lg hover:bg-amber-700 transition-colors"
         >
           <Plus className="h-4 w-4" />
           Add Property
@@ -32,7 +32,7 @@ export default async function PropertiesPage() {
 
       {/* Interactive map */}
       {properties.length > 0 && (
-        <div className="bg-white rounded-xl border border-gray-200 p-4">
+        <div className="bg-white rounded-2xl border border-stone-100 shadow-sm p-4">
           <h2 className="text-sm font-semibold text-gray-700 mb-3">Property Locations</h2>
           <PropertyMap properties={properties} />
         </div>
@@ -45,7 +45,7 @@ export default async function PropertiesPage() {
           <p className="text-sm text-gray-400 mt-1">Add your first property to get started.</p>
           <Link
             href="/properties/new"
-            className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors"
+            className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-amber-600 text-white text-sm font-medium rounded-lg hover:bg-amber-700 transition-colors"
           >
             <Plus className="h-4 w-4" />
             Add Property
@@ -57,11 +57,11 @@ export default async function PropertiesPage() {
             <Link
               key={p.id}
               href={`/properties/${p.id}`}
-              className="group bg-white rounded-xl border border-gray-200 p-5 hover:border-indigo-300 hover:shadow-sm transition-all"
+              className="group bg-white rounded-2xl border border-stone-100 shadow-sm p-5 hover:border-amber-300 hover:shadow-sm transition-all"
             >
               <div className="flex items-start justify-between mb-3">
                 <div>
-                  <h2 className="font-semibold text-gray-900 group-hover:text-indigo-600 transition-colors">
+                  <h2 className="font-semibold text-gray-900 group-hover:text-amber-600 transition-colors">
                     {p.name}
                   </h2>
                   <p className="text-xs text-gray-400 mt-0.5 flex items-center gap-1">

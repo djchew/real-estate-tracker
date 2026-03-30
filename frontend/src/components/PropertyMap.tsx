@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Property } from "@/lib/api";
-import { fmt$, capitalize } from "@/lib/utils";
+import { fmt$ } from "@/lib/utils";
 
 interface GeoProperty extends Property {
   lat: number;
@@ -11,10 +12,39 @@ interface GeoProperty extends Property {
 
 interface Props {
   properties: Property[];
+  height?: number;
 }
 
-// Geocode an address using OpenStreetMap Nominatim (free, no API key)
-async function geocode(property: Property): Promise<GeoProperty | null> {
+const CACHE_KEY = "rtrack_geocache";
+const CACHE_TTL = 30 * 24 * 60 * 60 * 1000; // 30 days
+
+function readCache(): Record<string, { lat: number; lng: number; ts: number }> {
+  try {
+    return JSON.parse(localStorage.getItem(CACHE_KEY) ?? "{}");
+  } catch {
+    return {};
+  }
+}
+
+function getCached(id: string) {
+  const cache = readCache();
+  const entry = cache[id];
+  if (!entry || Date.now() - entry.ts > CACHE_TTL) return null;
+  return { lat: entry.lat, lng: entry.lng };
+}
+
+function saveCache(id: string, lat: number, lng: number) {
+  const cache = readCache();
+  cache[id] = { lat, lng, ts: Date.now() };
+  try {
+    localStorage.setItem(CACHE_KEY, JSON.stringify(cache));
+  } catch {}
+}
+
+async function geocode(property: Property): Promise<{ lat: number; lng: number } | null> {
+  const cached = getCached(property.id);
+  if (cached) return cached;
+
   const q = encodeURIComponent(
     `${property.address}, ${property.city}, ${property.state} ${property.zip}`
   );
@@ -24,90 +54,149 @@ async function geocode(property: Property): Promise<GeoProperty | null> {
       { headers: { "Accept-Language": "en" } }
     );
     const data = await res.json();
-    if (data.length === 0) return null;
-    return { ...property, lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
+    if (!data.length) return null;
+    const lat = parseFloat(data[0].lat);
+    const lng = parseFloat(data[0].lon);
+    saveCache(property.id, lat, lng);
+    return { lat, lng };
   } catch {
     return null;
   }
 }
 
-export default function PropertyMap({ properties }: Props) {
+export default function PropertyMap({ properties, height = 320 }: Props) {
+  const router = useRouter();
   const mapRef = useRef<HTMLDivElement>(null);
+  const mapInstanceRef = useRef<unknown>(null);
   const [geoProps, setGeoProps] = useState<GeoProperty[]>([]);
   const [loading, setLoading] = useState(true);
-  const mapInstanceRef = useRef<unknown>(null);
+  const [geocoded, setGeocoded] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
     async function load() {
       setLoading(true);
-      // Geocode all properties sequentially to respect Nominatim rate limits
       const results: GeoProperty[] = [];
+
+      // First pass: load from cache instantly
       for (const p of properties) {
-        if (cancelled) break;
-        const geo = await geocode(p);
-        if (geo) results.push(geo);
-        // Nominatim requires 1 req/sec
-        await new Promise((r) => setTimeout(r, 1100));
+        const cached = getCached(p.id);
+        if (cached) results.push({ ...p, ...cached });
       }
-      if (!cancelled) {
+      if (results.length > 0 && !cancelled) {
         setGeoProps(results);
         setLoading(false);
       }
+
+      // Second pass: fetch uncached ones
+      const uncached = properties.filter((p) => !getCached(p.id));
+      for (let i = 0; i < uncached.length; i++) {
+        if (cancelled) break;
+        const p = uncached[i];
+        const geo = await geocode(p);
+        if (geo && !cancelled) {
+          results.push({ ...p, ...geo });
+          setGeoProps([...results]);
+          setGeocoded(i + 1);
+          setLoading(false);
+        }
+        if (i < uncached.length - 1) {
+          await new Promise((r) => setTimeout(r, 1100)); // Nominatim rate limit
+        }
+      }
+      if (!cancelled) setLoading(false);
     }
+
     if (properties.length > 0) {
       load();
     } else {
       setLoading(false);
     }
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [properties]);
 
   useEffect(() => {
-    if (loading || geoProps.length === 0 || !mapRef.current) return;
-    if (mapInstanceRef.current) return; // already initialised
+    if (geoProps.length === 0 || !mapRef.current) return;
 
-    // Dynamically import Leaflet to avoid SSR issues
-    import("leaflet").then((L) => {
-      // Fix default icon path for Next.js
+    const initMap = async () => {
+      const L = (await import("leaflet")).default;
+
+      if (mapInstanceRef.current) {
+        // Update markers on existing map
+        return;
+      }
+
       delete (L.Icon.Default.prototype as Record<string, unknown>)._getIconUrl;
-      L.Icon.Default.mergeOptions({
-        iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-        iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
-        shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
-      });
 
-      if (!mapRef.current) return;
-      const map = L.map(mapRef.current);
+      const map = L.map(mapRef.current!, { zoomControl: true });
       mapInstanceRef.current = map;
 
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-        maxZoom: 19,
-      }).addTo(map);
+      // Warm CartoDB Voyager tiles
+      L.tileLayer(
+        "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
+        {
+          attribution:
+            '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> © <a href="https://carto.com/">CARTO</a>',
+          maxZoom: 19,
+        }
+      ).addTo(map);
 
       const bounds = L.latLngBounds([]);
+
       for (const p of geoProps) {
-        const marker = L.marker([p.lat, p.lng]).addTo(map);
-        const equity =
-          (p.current_value ?? 0) > 0
-            ? `<br/><span style="color:#10b981;font-weight:600">${fmt$(p.current_value ?? 0)} value</span>`
+        // Custom warm marker
+        const icon = L.divIcon({
+          className: "",
+          html: `
+            <div style="
+              background: #d97706;
+              color: white;
+              border-radius: 9999px 9999px 9999px 0;
+              transform: rotate(-45deg);
+              width: 32px; height: 32px;
+              display: flex; align-items: center; justify-content: center;
+              box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+              border: 2px solid white;
+            ">
+              <div style="transform: rotate(45deg); font-size: 14px;">🏠</div>
+            </div>`,
+          iconSize: [32, 32],
+          iconAnchor: [8, 32],
+          popupAnchor: [8, -36],
+        });
+
+        const marker = L.marker([p.lat, p.lng], { icon }).addTo(map);
+
+        const valueHtml =
+          p.current_value != null
+            ? `<div style="color:#059669;font-weight:700;font-size:15px;margin-top:4px">${fmt$(p.current_value)}</div>`
             : "";
-        marker.bindPopup(`
-          <div style="min-width:160px">
-            <strong style="font-size:14px">${p.name}</strong><br/>
-            <span style="color:#6b7280;font-size:12px">${p.address}<br/>${p.city}, ${p.state}</span><br/>
-            <span style="font-size:12px;color:#6366f1">${capitalize(p.property_type)} · ${capitalize(p.status)}</span>
-            ${equity}
-          </div>
-        `);
+
+        marker.bindPopup(
+          `<div style="min-width:180px;font-family:sans-serif;padding:2px">
+            <div style="font-weight:700;font-size:14px;color:#1c1917">${p.name}</div>
+            <div style="color:#78716c;font-size:12px;margin-top:2px">${p.address}<br/>${p.city}, ${p.state}</div>
+            ${valueHtml}
+            <a href="/properties/${p.id}" style="
+              display:inline-block;margin-top:8px;padding:4px 12px;
+              background:#d97706;color:white;border-radius:6px;
+              font-size:12px;font-weight:600;text-decoration:none
+            ">View Property →</a>
+          </div>`,
+          { maxWidth: 220 }
+        );
+
         bounds.extend([p.lat, p.lng]);
       }
 
       if (bounds.isValid()) {
-        map.fitBounds(bounds, { padding: [40, 40], maxZoom: 14 });
+        map.fitBounds(bounds, { padding: [48, 48], maxZoom: 14 });
       }
-    });
+    };
+
+    initMap();
 
     return () => {
       if (mapInstanceRef.current) {
@@ -115,27 +204,34 @@ export default function PropertyMap({ properties }: Props) {
         mapInstanceRef.current = null;
       }
     };
-  }, [loading, geoProps]);
+  }, [geoProps, router]);
+
+  const uncachedCount = properties.filter((p) => !getCached(p.id)).length;
 
   return (
-    <div className="relative">
-      {loading && (
-        <div className="absolute inset-0 z-10 flex items-center justify-center bg-gray-50 rounded-xl">
+    <div className="relative rounded-2xl overflow-hidden" style={{ height }}>
+      {loading && geoProps.length === 0 && (
+        <div className="absolute inset-0 z-10 flex items-center justify-center bg-stone-100">
           <div className="text-center">
-            <div className="h-6 w-6 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
-            <p className="text-sm text-gray-500">Geocoding addresses…</p>
+            <div className="h-6 w-6 border-2 border-amber-500 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+            <p className="text-sm text-stone-500">Loading map…</p>
           </div>
         </div>
       )}
-      <div
-        ref={mapRef}
-        className="h-80 w-full rounded-xl border border-gray-200 z-0"
-        style={{ minHeight: 320 }}
-      />
+
+      {/* Geocoding progress badge */}
+      {!loading && uncachedCount > 0 && geocoded < uncachedCount && (
+        <div className="absolute top-3 right-3 z-10 bg-white/90 backdrop-blur-sm rounded-lg px-3 py-1.5 text-xs text-stone-600 shadow-sm border border-stone-100">
+          Geocoding {geocoded}/{uncachedCount}…
+        </div>
+      )}
+
+      <div ref={mapRef} className="h-full w-full" />
+
       {!loading && geoProps.length === 0 && properties.length > 0 && (
-        <p className="text-xs text-gray-400 mt-2 text-center">
-          Could not geocode any addresses. Check that your addresses are complete.
-        </p>
+        <div className="absolute inset-0 flex items-center justify-center bg-stone-100">
+          <p className="text-sm text-stone-400">Could not geocode addresses.</p>
+        </div>
       )}
     </div>
   );

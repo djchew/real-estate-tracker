@@ -112,7 +112,7 @@ export default function TenantsPanel({ propertyId, initialTenants }: Props) {
   const showForm = adding || editing !== null;
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200">
+    <div className="bg-white rounded-2xl border border-stone-100 shadow-sm">
       <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
         <div className="flex items-center gap-2">
           <Users className="h-4 w-4 text-gray-400" />
@@ -120,7 +120,7 @@ export default function TenantsPanel({ propertyId, initialTenants }: Props) {
         </div>
         <button
           onClick={() => { setAdding((v) => !v); setEditing(null); setForm(blank); }}
-          className="inline-flex items-center gap-1.5 text-xs font-medium text-indigo-600 hover:text-indigo-700"
+          className="inline-flex items-center gap-1.5 text-xs font-medium text-amber-600 hover:text-amber-700"
         >
           <Plus className="h-3.5 w-3.5" />
           Add
@@ -152,7 +152,7 @@ export default function TenantsPanel({ propertyId, initialTenants }: Props) {
                 step={type === "number" ? "any" : undefined}
                 value={form[key as keyof typeof form]}
                 onChange={(e) => set(key as keyof typeof form, e.target.value)}
-                className="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
               />
             </div>
           ))}
@@ -161,7 +161,7 @@ export default function TenantsPanel({ propertyId, initialTenants }: Props) {
             <select
               value={form.status}
               onChange={(e) => set("status", e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
             >
               {["active", "past", "prospective"].map((s) => (
                 <option key={s} value={s}>{capitalize(s)}</option>
@@ -169,7 +169,7 @@ export default function TenantsPanel({ propertyId, initialTenants }: Props) {
             </select>
           </div>
           <div className="sm:col-span-3 flex gap-2">
-            <button type="submit" disabled={saving} className="px-4 py-1.5 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 disabled:opacity-50">
+            <button type="submit" disabled={saving} className="px-4 py-1.5 bg-amber-600 text-white text-sm font-medium rounded-lg hover:bg-amber-700 disabled:opacity-50">
               {saving ? "Saving…" : editing ? "Update" : "Add Tenant"}
             </button>
             <button type="button" onClick={() => { setAdding(false); setEditing(null); setForm(blank); }} className="px-3 py-1.5 border border-gray-300 text-gray-600 text-sm rounded-lg hover:bg-gray-50">
@@ -207,7 +207,7 @@ export default function TenantsPanel({ propertyId, initialTenants }: Props) {
                   <p className="text-xs text-gray-400">Rent</p>
                   <p className="font-semibold text-sm">{fmt$(t.rent_amount)}/mo</p>
                 </div>
-                <button onClick={() => startEdit(t)} className="text-gray-300 hover:text-indigo-500 transition-colors">
+                <button onClick={() => startEdit(t)} className="text-gray-300 hover:text-amber-500 transition-colors">
                   <Pencil className="h-4 w-4" />
                 </button>
                 <button onClick={() => handleDelete(t.id)} className="text-gray-300 hover:text-red-500 transition-colors">
