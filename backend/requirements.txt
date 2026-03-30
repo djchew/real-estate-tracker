@@ -1,6 +1,6 @@
 fastapi
 uvicorn[standard]
-supabase
+supabase==2.9.1
 python-dotenv
 psycopg2-binary
 sqlalchemy
