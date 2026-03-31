@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from datetime import date, timedelta
 from database.connection import supabase
 
@@ -66,10 +66,27 @@ def get_summary():
 
 @router.get("/summary/cash-flow")
 def get_cash_flow():
-    result = (
-        supabase.table("v_monthly_cash_flow")
-        .select("*")
-        .order("month", desc=True)
-        .execute()
-    )
-    return result.data
+    try:
+        result = (
+            supabase.table("v_monthly_cash_flow")
+            .select("*")
+            .order("month", desc=True)
+            .execute()
+        )
+        return [row for row in (result.data or []) if row.get("month")]
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/summary/analytics")
+def get_analytics():
+    """Single endpoint that returns all data needed for the analytics page."""
+    try:
+        mortgages = supabase.table("mortgages").select("*").execute()
+        tenants = supabase.table("tenants").select("*").execute()
+        return {
+            "mortgages": mortgages.data or [],
+            "tenants": tenants.data or [],
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

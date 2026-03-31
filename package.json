@@ -3,7 +3,7 @@
   "private": true,
   "workspaces": ["frontend"],
   "scripts": {
-    "dev": "concurrently --names \"API,WEB\" --prefix-colors \"cyan,magenta\" \"npm run dev:api\" \"npm run dev:web\"",
+    "dev": "concurrently --kill-others --names \"API,WEB\" --prefix-colors \"cyan,magenta\" \"npm run dev:api\" \"npm run dev:web\"",
     "dev:api": "cd backend && python -m uvicorn main:app --reload",
     "dev:web": "npm run dev --workspace=frontend"
   },

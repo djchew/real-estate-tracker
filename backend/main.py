@@ -1,9 +1,38 @@
+import os
+import sys
+import time
+import asyncio
+import threading
 from fastapi import FastAPI
+
+# Fix httpx/WinError 10035 on Windows (WSAEWOULDBLOCK with ProactorEventLoop)
+if sys.platform == "win32":
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 from fastapi.middleware.cors import CORSMiddleware
 
 from routers import properties, mortgages, tenants, income, expenses, events, summary
 
 app = FastAPI(title="Real Estate Tracker API")
+
+# Shutdown when browser closes (no heartbeat for 30s after first ping)
+_last_heartbeat: float = 0.0
+_connected = False
+
+def _watch():
+    global _connected
+    while True:
+        time.sleep(10)
+        if _connected and time.time() - _last_heartbeat > 30:
+            os._exit(0)
+
+threading.Thread(target=_watch, daemon=True).start()
+
+@app.post("/api/heartbeat")
+def heartbeat():
+    global _last_heartbeat, _connected
+    _last_heartbeat = time.time()
+    _connected = True
+    return {"ok": True}
 
 app.add_middleware(
     CORSMiddleware,

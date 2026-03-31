@@ -2,7 +2,7 @@ import { getProperties } from "@/lib/api";
 import { fmt$, capitalize } from "@/lib/utils";
 import Link from "next/link";
 import { Building2, Plus, MapPin, BedDouble, Bath } from "lucide-react";
-import PropertyMap from "@/components/PropertyMap";
+import PropertyMapLazy from "@/components/PropertyMapLazy";
 
 const statusColors: Record<string, string> = {
   active: "bg-emerald-100 text-emerald-700",
@@ -34,7 +34,7 @@ export default async function PropertiesPage() {
       {properties.length > 0 && (
         <div className="bg-white rounded-2xl border border-stone-100 shadow-sm p-4">
           <h2 className="text-sm font-semibold text-gray-700 mb-3">Property Locations</h2>
-          <PropertyMap properties={properties} />
+          <PropertyMapLazy properties={properties} />
         </div>
       )}
 

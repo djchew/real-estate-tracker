@@ -2,7 +2,7 @@ import { getSummary, getProperties } from "@/lib/api";
 import { fmt$, fmtDate, capitalize } from "@/lib/utils";
 import { Building2, TrendingUp, DollarSign, CreditCard, CalendarClock, AlertTriangle, Plus } from "lucide-react";
 import Link from "next/link";
-import PropertyMap from "@/components/PropertyMap";
+import PropertyMapLazy from "@/components/PropertyMapLazy";
 
 export default async function DashboardPage() {
   const [summary, properties] = await Promise.all([getSummary(), getProperties()]);
@@ -73,7 +73,7 @@ export default async function DashboardPage() {
           </Link>
         </div>
         {properties.length > 0 ? (
-          <PropertyMap properties={properties} height={420} />
+          <PropertyMapLazy properties={properties} height={420} />
         ) : (
           <div className="h-64 flex flex-col items-center justify-center bg-stone-50">
             <Building2 className="h-10 w-10 text-stone-200 mb-3" />

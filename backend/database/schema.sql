@@ -225,7 +225,8 @@ LEFT JOIN (
     SELECT property_id, month, SUM(amount) AS total_expenses
     FROM expense_records
     GROUP BY property_id, month
-) x ON x.property_id = p.id AND x.month = m.month;
+) x ON x.property_id = p.id AND x.month = m.month
+WHERE m.month IS NOT NULL;
 
 
 -- ============================================================

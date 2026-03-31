@@ -1,15 +1,18 @@
-import { getCashFlow, getProperties, getMortgages, getTenants } from "@/lib/api";
+import { getCashFlow, getProperties, getAnalyticsData } from "@/lib/api";
 import { fmt$, fmtPct } from "@/lib/utils";
 import CashFlowChart from "@/components/CashFlowChart";
 
 export default async function AnalyticsPage() {
-  const [cashFlowData, properties] = await Promise.all([getCashFlow(), getProperties()]);
-
-  // Fetch mortgages + tenants for all properties
-  const [mortgageArrays, tenantArrays] = await Promise.all([
-    Promise.all(properties.map((p) => getMortgages(p.id))),
-    Promise.all(properties.map((p) => getTenants(p.id))),
+  const [cashFlowData, properties, analyticsData] = await Promise.all([
+    getCashFlow(), getProperties(), getAnalyticsData(),
   ]);
+
+  const allMortgages = analyticsData.mortgages;
+  const allTenants = analyticsData.tenants;
+
+  // Group by property id
+  const mortgageArrays = properties.map((p) => allMortgages.filter((m) => m.property_id === p.id));
+  const tenantArrays = properties.map((p) => allTenants.filter((t) => t.property_id === p.id));
 
   // All-time totals per property
   const byProperty: Record<string, {

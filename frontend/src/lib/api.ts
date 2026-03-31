@@ -76,6 +76,7 @@ export const deleteEvent = (id: string) =>
 // ── Summary ──────────────────────────────────────────────────
 export const getSummary = () => request<Summary>("/summary");
 export const getCashFlow = () => request<CashFlowRow[]>("/summary/cash-flow");
+export const getAnalyticsData = () => request<{ mortgages: Mortgage[]; tenants: Tenant[] }>("/summary/analytics");
 
 // ── Types ────────────────────────────────────────────────────
 export interface Property {
