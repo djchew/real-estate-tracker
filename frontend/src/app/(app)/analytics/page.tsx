@@ -1,6 +1,7 @@
 import { getCashFlow, getProperties, getAnalyticsData } from "@/lib/api";
 import { fmt$, fmtPct } from "@/lib/utils";
 import CashFlowChart from "@/components/CashFlowChart";
+import TaxExportButton from "@/components/TaxExportButton";
 
 export default async function AnalyticsPage() {
   const [cashFlowData, properties, analyticsData] = await Promise.all([
@@ -65,9 +66,12 @@ export default async function AnalyticsPage() {
 
   return (
     <div className="p-6 space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-stone-800">Analytics</h1>
-        <p className="text-sm text-stone-400 mt-1">Portfolio performance across all properties</p>
+      <div className="flex items-start justify-between flex-wrap gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-stone-800">Analytics</h1>
+          <p className="text-sm text-stone-400 mt-1">Portfolio performance across all properties</p>
+        </div>
+        <TaxExportButton />
       </div>
 
       {/* Portfolio totals */}

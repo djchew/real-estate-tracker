@@ -12,6 +12,8 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 -- ============================================================
 DROP VIEW IF EXISTS v_portfolio_summary;
 DROP VIEW IF EXISTS v_monthly_cash_flow;
+DROP TABLE IF EXISTS watchlist            CASCADE;
+DROP TABLE IF EXISTS maintenance_requests CASCADE;
 DROP TABLE IF EXISTS events          CASCADE;
 DROP TABLE IF EXISTS expense_records CASCADE;
 DROP TABLE IF EXISTS income_records  CASCADE;
@@ -138,6 +140,73 @@ CREATE TABLE expense_records (
     is_recurring    BOOLEAN NOT NULL DEFAULT FALSE,
     created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+
+-- ============================================================
+-- WATCHLIST (properties being considered for purchase)
+-- ============================================================
+CREATE TABLE watchlist (
+    id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    listing_url     TEXT,
+    address         TEXT NOT NULL,
+    suburb          TEXT,
+    state           TEXT,
+    asking_price    NUMERIC(14, 2),
+    bedrooms        SMALLINT,
+    bathrooms       NUMERIC(3, 1),
+    parking         SMALLINT,
+    land_size       INTEGER,                               -- sqm
+    property_type   TEXT CHECK (property_type IN (
+                        'house', 'unit', 'townhouse', 'land', 'commercial', 'other'
+                    )),
+    status          TEXT NOT NULL DEFAULT 'watching' CHECK (status IN (
+                        'watching', 'inspected', 'offered', 'passed', 'purchased'
+                    )),
+    notes           TEXT,
+    og_title        TEXT,                                  -- cached from listing URL
+    og_image        TEXT,
+    og_description  TEXT,
+    created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TRIGGER trg_watchlist_updated_at
+    BEFORE UPDATE ON watchlist
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+
+
+-- ============================================================
+-- MAINTENANCE REQUESTS
+-- ============================================================
+CREATE TABLE maintenance_requests (
+    id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    property_id     UUID NOT NULL REFERENCES properties(id) ON DELETE CASCADE,
+    title           TEXT NOT NULL,
+    category        TEXT NOT NULL CHECK (category IN (
+                        'plumbing', 'electrical', 'hvac', 'appliance',
+                        'structural', 'pest', 'landscaping', 'cleaning', 'other'
+                    )),
+    priority        TEXT NOT NULL DEFAULT 'medium' CHECK (priority IN (
+                        'low', 'medium', 'high', 'urgent'
+                    )),
+    status          TEXT NOT NULL DEFAULT 'open' CHECK (status IN (
+                        'open', 'in_progress', 'completed', 'cancelled'
+                    )),
+    reported_date   DATE NOT NULL DEFAULT CURRENT_DATE,
+    completed_date  DATE,
+    cost            NUMERIC(10, 2),
+    vendor          TEXT,
+    notes           TEXT,
+    created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX idx_maintenance_property_id ON maintenance_requests(property_id);
+CREATE INDEX idx_maintenance_status      ON maintenance_requests(status);
+
+CREATE TRIGGER trg_maintenance_updated_at
+    BEFORE UPDATE ON maintenance_requests
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
 
 -- ============================================================

@@ -10,7 +10,7 @@ if sys.platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 from fastapi.middleware.cors import CORSMiddleware
 
-from routers import properties, mortgages, tenants, income, expenses, events, summary
+from routers import properties, mortgages, tenants, income, expenses, events, summary, maintenance, demo, watchlist
 
 app = FastAPI(title="Real Estate Tracker API")
 
@@ -49,6 +49,9 @@ app.include_router(income.router, prefix="/api")
 app.include_router(expenses.router, prefix="/api")
 app.include_router(events.router, prefix="/api")
 app.include_router(summary.router, prefix="/api")
+app.include_router(maintenance.router, prefix="/api")
+app.include_router(demo.router, prefix="/api")
+app.include_router(watchlist.router, prefix="/api")
 
 
 @app.get("/")

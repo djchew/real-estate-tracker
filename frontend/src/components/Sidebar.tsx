@@ -9,6 +9,8 @@ import {
   TrendingUp,
   Users,
   CalendarClock,
+  Wrench,
+  Eye,
   Menu,
   X,
 } from "lucide-react";
@@ -20,6 +22,8 @@ const nav = [
   { href: "/analytics", label: "Analytics", icon: TrendingUp },
   { href: "/tenants", label: "Tenants", icon: Users },
   { href: "/events", label: "Events", icon: CalendarClock },
+  { href: "/maintenance", label: "Maintenance", icon: Wrench },
+  { href: "/watchlist", label: "Watchlist", icon: Eye },
 ];
 
 export default function Sidebar() {

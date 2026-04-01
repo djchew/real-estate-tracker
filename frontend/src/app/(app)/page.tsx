@@ -1,8 +1,9 @@
 import { getSummary, getProperties } from "@/lib/api";
 import { fmt$, fmtDate, capitalize } from "@/lib/utils";
-import { Building2, TrendingUp, DollarSign, CreditCard, CalendarClock, AlertTriangle, Plus } from "lucide-react";
+import { Building2, TrendingUp, DollarSign, CreditCard, CalendarClock, AlertTriangle, Plus, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import PropertyMapLazy from "@/components/PropertyMapLazy";
+import { LoadDemoButton, ClearDemoButton } from "@/components/DemoButton";
 
 export default async function DashboardPage() {
   const [summary, properties] = await Promise.all([getSummary(), getProperties()]);
@@ -42,6 +43,50 @@ export default async function DashboardPage() {
     },
   ];
 
+  // Show onboarding if no properties yet
+  if (properties.length === 0) {
+    const steps = [
+      { num: 1, title: "Add your first property", desc: "Enter your property's address, type, and value.", href: "/properties/new", cta: "Add Property" },
+      { num: 2, title: "Add a tenant", desc: "Record who's renting and their lease details.", href: "/tenants", cta: "Add Tenant" },
+      { num: 3, title: "Record income & expenses", desc: "Track rent payments and costs for each property.", href: "/properties", cta: "Go to Properties" },
+      { num: 4, title: "View your analytics", desc: "See cap rate, cash-on-cash return, and NOI.", href: "/analytics", cta: "View Analytics" },
+    ];
+    return (
+      <div className="p-6 max-w-2xl mx-auto">
+        <div className="text-center mb-10">
+          <div className="inline-flex p-4 bg-amber-50 rounded-2xl mb-4">
+            <Building2 className="h-10 w-10 text-amber-500" />
+          </div>
+          <h1 className="text-2xl font-bold text-stone-800">Welcome to RealTrack</h1>
+          <p className="text-stone-400 mt-2">Follow these steps to set up your portfolio.</p>
+          <div className="mt-4 flex items-center justify-center gap-3">
+            <LoadDemoButton />
+          </div>
+          <p className="text-xs text-stone-400 mt-2">Or add your own data using the steps below</p>
+        </div>
+        <div className="space-y-4">
+          {steps.map((step) => (
+            <div key={step.num} className="bg-white rounded-2xl border border-stone-100 shadow-sm p-5 flex items-center gap-5">
+              <div className="w-9 h-9 rounded-full bg-amber-100 text-amber-700 font-bold text-sm flex items-center justify-center shrink-0">
+                {step.num}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-semibold text-stone-800">{step.title}</p>
+                <p className="text-sm text-stone-400 mt-0.5">{step.desc}</p>
+              </div>
+              <Link
+                href={step.href}
+                className="shrink-0 px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold rounded-xl transition-colors"
+              >
+                {step.cta}
+              </Link>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="p-6 space-y-6">
       {/* Header */}
@@ -52,13 +97,16 @@ export default async function DashboardPage() {
             {summary.active_properties} active {summary.active_properties === 1 ? "property" : "properties"} · {summary.current_month}
           </p>
         </div>
-        <Link
-          href="/properties/new"
-          className="inline-flex items-center gap-2 px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold rounded-xl shadow-sm transition-colors"
-        >
-          <Plus className="h-4 w-4" />
-          Add Property
-        </Link>
+        <div className="flex items-center gap-3">
+          <ClearDemoButton />
+          <Link
+            href="/properties/new"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold rounded-xl shadow-sm transition-colors"
+          >
+            <Plus className="h-4 w-4" />
+            Add Property
+          </Link>
+        </div>
       </div>
 
       {/* Hero Map */}

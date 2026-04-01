@@ -7,7 +7,7 @@ import {
 } from "@/lib/api";
 import { fmt$, fmtDate, fmtPct, capitalize } from "@/lib/utils";
 import Link from "next/link";
-import { Pencil, Building2, MapPin } from "lucide-react";
+import { Pencil, Building2, MapPin, FileText } from "lucide-react";
 import FinancialsPanel from "@/components/FinancialsPanel";
 import TenantsPanel from "@/components/TenantsPanel";
 import MortgagesPanel from "@/components/MortgagesPanel";
@@ -52,6 +52,13 @@ export default async function PropertyPage({
           </p>
         </div>
         <div className="flex items-center gap-2">
+          <Link
+            href={`/properties/${id}/report`}
+            className="inline-flex items-center gap-2 px-3 py-2 border border-stone-200 text-stone-600 text-sm font-medium rounded-lg hover:bg-stone-50 transition-colors"
+          >
+            <FileText className="h-4 w-4" />
+            Report
+          </Link>
           <Link
             href={`/properties/${id}/edit`}
             className="inline-flex items-center gap-2 px-3 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors"
