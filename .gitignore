@@ -4,6 +4,7 @@
 .env*.local
 
 # Backend
+backend/.env
 backend/__pycache__/
 backend/*.pyc
 backend/.venv/
@@ -17,6 +18,12 @@ frontend/.next/
 frontend/out/
 frontend/*.tsbuildinfo
 frontend/.env.local
+
+# Launcher scripts (local only)
+create-shortcut.ps1
+launch.vbs
+stop.bat
+start.bat
 
 # IDE
 .vscode/
