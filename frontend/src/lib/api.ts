@@ -77,6 +77,10 @@ export const deleteEvent = (id: string) =>
 export const getSummary = () => request<Summary>("/summary");
 export const getCashFlow = () => request<CashFlowRow[]>("/summary/cash-flow");
 export const getAnalyticsData = () => request<{ mortgages: Mortgage[]; tenants: Tenant[] }>("/summary/analytics");
+export const getExpenseTrends = () =>
+  request<{ rows: ExpenseTrendRow[]; anomalies: ExpenseTrendRow[] }>("/summary/expense-trends");
+export const getForecast = () =>
+  request<{ forecast: ForecastRow[] }>("/summary/forecast");
 
 // ── Types ────────────────────────────────────────────────────
 export interface Property {
@@ -198,4 +202,22 @@ export interface CashFlowRow {
   total_income: number;
   total_expenses: number;
   cash_flow: number;
+}
+
+export interface ExpenseTrendRow {
+  property_id: string;
+  property_name: string;
+  month: string;
+  category: string;
+  total_amount: number;
+  rolling_avg: number | null;
+  is_anomaly: boolean;
+}
+
+export interface ForecastRow {
+  month: string;
+  projected_income: number;
+  projected_expenses: number;
+  projected_cash_flow: number;
+  is_forecast: boolean;
 }

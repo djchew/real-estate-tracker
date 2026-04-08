@@ -1,11 +1,15 @@
-import { getCashFlow, getProperties, getAnalyticsData } from "@/lib/api";
+import { getCashFlow, getProperties, getAnalyticsData, getExpenseTrends, getForecast } from "@/lib/api";
 import { fmt$, fmtPct } from "@/lib/utils";
 import CashFlowChart from "@/components/CashFlowChart";
 import TaxExportButton from "@/components/TaxExportButton";
+import MortgageBreakdownPanel from "@/components/MortgageBreakdownPanel";
+import ExpenseTrendsChart from "@/components/ExpenseTrendsChart";
+import ExpenseAnomalyCards from "@/components/ExpenseAnomalyCards";
+import ForecastChart from "@/components/ForecastChart";
 
 export default async function AnalyticsPage() {
-  const [cashFlowData, properties, analyticsData] = await Promise.all([
-    getCashFlow(), getProperties(), getAnalyticsData(),
+  const [cashFlowData, properties, analyticsData, expenseTrends, forecastData] = await Promise.all([
+    getCashFlow(), getProperties(), getAnalyticsData(), getExpenseTrends(), getForecast(),
   ]);
 
   const allMortgages = analyticsData.mortgages;
@@ -61,7 +65,10 @@ export default async function AnalyticsPage() {
 
     const equity = (p.current_value ?? 0) - totalDebt;
 
-    return { property: p, totalDebt, equity, noi, capRate, coc, annualIncome, annualCashFlow, cashData };
+    // Gross Yield = Annual Income / Property Value
+    const grossYield = p.current_value && p.current_value > 0 ? annualIncome / p.current_value : null;
+
+    return { property: p, totalDebt, equity, noi, capRate, coc, annualIncome, annualCashFlow, grossYield, cashData };
   });
 
   return (
@@ -111,7 +118,7 @@ export default async function AnalyticsPage() {
             <table className="w-full text-sm">
               <thead className="bg-stone-50 border-b border-stone-100">
                 <tr>
-                  {["Property", "Value", "Equity", "NOI", "Cap Rate", "Cash-on-Cash", "Annual CF"].map((h) => (
+                  {["Property", "Value", "Equity", "NOI", "Cap Rate", "Cash-on-Cash", "Gross Yield", "Annual CF"].map((h) => (
                     <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-stone-500 uppercase tracking-wide whitespace-nowrap">
                       {h}
                     </th>
@@ -119,7 +126,7 @@ export default async function AnalyticsPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-stone-50">
-                {propertyMetrics.map(({ property: p, equity, noi, capRate, coc, annualCashFlow }) => (
+                {propertyMetrics.map(({ property: p, equity, noi, capRate, coc, grossYield, annualCashFlow }) => (
                   <tr key={p.id} className="hover:bg-stone-50/50 transition-colors">
                     <td className="px-4 py-4 font-medium text-stone-800">
                       <a href={`/properties/${p.id}`} className="hover:text-amber-600 transition-colors">
@@ -147,6 +154,13 @@ export default async function AnalyticsPage() {
                         </span>
                       ) : "—"}
                     </td>
+                    <td className="px-4 py-4">
+                      {grossYield != null ? (
+                        <span className={`font-semibold ${grossYield >= 0.05 ? "text-emerald-600" : grossYield >= 0.03 ? "text-amber-600" : "text-red-500"}`}>
+                          {fmtPct(grossYield)}
+                        </span>
+                      ) : "—"}
+                    </td>
                     <td className={`px-4 py-4 font-semibold ${annualCashFlow >= 0 ? "text-emerald-600" : "text-red-600"}`}>
                       {fmt$(annualCashFlow)}
                     </td>
@@ -157,11 +171,44 @@ export default async function AnalyticsPage() {
           </div>
           <div className="px-5 py-3 bg-stone-50 border-t border-stone-100">
             <p className="text-xs text-stone-400">
-              <span className="text-emerald-600 font-medium">Green</span> Cap Rate ≥ 6% · Cash-on-Cash ≥ 8% &nbsp;
-              <span className="text-amber-600 font-medium">Amber</span> Cap Rate 4–6% · CoC 5–8% &nbsp;
+              <span className="text-emerald-600 font-medium">Green</span> Cap Rate ≥ 6% · Cash-on-Cash ≥ 8% · Gross Yield ≥ 5% &nbsp;
+              <span className="text-amber-600 font-medium">Amber</span> Cap Rate 4–6% · CoC 5–8% · Gross Yield 3–5% &nbsp;
               <span className="text-red-500 font-medium">Red</span> Below thresholds
             </p>
           </div>
+        </div>
+      )}
+
+      {/* Monthly Mortgage Breakdown */}
+      {allMortgages.length > 0 && (
+        <div className="bg-white rounded-2xl border border-stone-100 shadow-sm overflow-hidden">
+          <div className="px-5 py-4 border-b border-stone-100">
+            <h2 className="text-sm font-semibold text-stone-700">Monthly Mortgage Breakdown</h2>
+            <p className="text-xs text-stone-400 mt-0.5">Principal vs interest on current balances</p>
+          </div>
+          <div className="p-5">
+            <MortgageBreakdownPanel properties={properties} mortgages={allMortgages} />
+          </div>
+        </div>
+      )}
+
+      {/* Expense Trends */}
+      {expenseTrends.rows.length > 0 && (
+        <div className="space-y-3">
+          <ExpenseAnomalyCards anomalies={expenseTrends.anomalies} />
+          <div className="bg-white rounded-2xl border border-stone-100 shadow-sm p-5">
+            <h2 className="text-sm font-semibold text-stone-700 mb-4">Expense Trends by Category (Last 13 Months)</h2>
+            <ExpenseTrendsChart rows={expenseTrends.rows} />
+          </div>
+        </div>
+      )}
+
+      {/* 12-Month Forecast */}
+      {forecastData.forecast.length > 0 && (
+        <div className="bg-white rounded-2xl border border-stone-100 shadow-sm p-5">
+          <h2 className="text-sm font-semibold text-stone-700 mb-1">12-Month Cash Flow Forecast</h2>
+          <p className="text-xs text-stone-400 mb-4">Last 3 months actual + 12 months projected based on active leases and historical expenses</p>
+          <ForecastChart forecastRows={forecastData.forecast} cashFlowData={cashFlowData} />
         </div>
       )}
 
